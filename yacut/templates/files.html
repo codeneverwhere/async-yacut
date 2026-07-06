@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}YaCut — загрузка файлов{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-7 text-center">
+        <h1 class="mb-2">
+          <span style="color: red;">Ya</span>Cut
+        </h1>
+        <p class="mb-4">Загрузите файлы и получите на них короткие ссылки</p>
+
+        <form method="POST" novalidate enctype="multipart/form-data">
+          {{ form.csrf_token }}
+          {{ form.files(class="form-control form-control-lg py-2 mb-3") }}
+          {% if form.files.errors %}
+            {% for error in form.files.errors %}
+              <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+          {{ form.submit(class="btn btn-primary px-5 py-3") }}
+        </form>
+
+        {% if results %}
+          <table class="table mt-4">
+            <tbody>
+              {% for filename, short_id in results %}
+                <tr>
+                  <td>{{ filename }}</td>
+                  <td>
+                    <a href="{{ url_for('redirect_view', short_id=short_id, _external=True) }}">
+                      {{ url_for('redirect_view', short_id=short_id, _external=True) }}
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

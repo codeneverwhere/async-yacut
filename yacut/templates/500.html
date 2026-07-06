@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}500 — ошибка сервера{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-7 text-center">
+        <h1>Хьюстон, у нас проблемы!</h1>
+        <p>На сервере произошёл сбой. Попробуйте обновить страницу через пару минут.</p>
+        <a href="{{ url_for('index_view') }}">Вернуться на главную</a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
