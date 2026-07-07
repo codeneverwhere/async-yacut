@@ -22,7 +22,6 @@ async def upload_one_file(session, file):
     file_data = file.read()
     disk_path = 'app:/' + filename
 
-    # Шаг 1: получить URL для загрузки
     async with session.get(
         REQUEST_UPLOAD_URL,
         headers=get_auth_headers(),
@@ -31,7 +30,6 @@ async def upload_one_file(session, file):
         data = await response.json()
         upload_url = data['href']
 
-    # Шаг 2: загрузить файл, получить путь из Location
     async with session.put(
         upload_url,
         data=file_data
@@ -40,7 +38,6 @@ async def upload_one_file(session, file):
         location = urllib.parse.unquote(location)
         location = location.replace('/disk', '')
 
-    # Шаг 3: получить ссылку на скачивание используя location
     async with session.get(
         DOWNLOAD_LINK_URL,
         headers=get_auth_headers(),
