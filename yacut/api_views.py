@@ -1,7 +1,8 @@
 import re
+
 from flask import jsonify, request
 
-from . import app
+from . import app, db
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .views import get_unique_short_id
@@ -12,10 +13,14 @@ def create_short_link():
     data = request.get_json(silent=True)
     if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
-    if 'url' not in data:
+    if not data.get('url'):
         raise InvalidAPIUsage('"url" является обязательным полем!')
     custom_id = data.get('custom_id')
     if custom_id:
+        if not isinstance(custom_id, str):
+            raise InvalidAPIUsage(
+                'Указано недопустимое имя для короткой ссылки'
+            )
         if len(custom_id) > 16 or not re.match(r'^[a-zA-Z0-9]+$', custom_id):
             raise InvalidAPIUsage(
                 'Указано недопустимое имя для короткой ссылки'
@@ -28,11 +33,8 @@ def create_short_link():
             )
     else:
         custom_id = get_unique_short_id()
-    url_map = URLMap(
-        original=data['url'],
-        short=custom_id
-    )
-    from . import db
+    url_map = URLMap()
+    url_map.from_dict({'url': data['url'], 'custom_id': custom_id})
     db.session.add(url_map)
     db.session.commit()
     return jsonify(url_map.to_dict()), 201

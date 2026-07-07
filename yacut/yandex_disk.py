@@ -1,4 +1,5 @@
 import asyncio
+import urllib.parse
 
 import aiohttp
 
@@ -19,29 +20,31 @@ def get_auth_headers():
 async def upload_one_file(session, file):
     filename = file.filename
     file_data = file.read()
-    disk_path = f'app:/{filename}'
+    disk_path = 'app:/' + filename
 
+    # Шаг 1: получить URL для загрузки
     async with session.get(
         REQUEST_UPLOAD_URL,
         headers=get_auth_headers(),
-        params={
-            'path': disk_path,
-            'overwrite': 'True'
-        }
+        params={'path': disk_path, 'overwrite': 'True'}
     ) as response:
         data = await response.json()
         upload_url = data['href']
 
+    # Шаг 2: загрузить файл, получить путь из Location
     async with session.put(
         upload_url,
         data=file_data
     ) as response:
-        pass
+        location = response.headers.get('Location', '')
+        location = urllib.parse.unquote(location)
+        location = location.replace('/disk', '')
 
+    # Шаг 3: получить ссылку на скачивание используя location
     async with session.get(
         DOWNLOAD_LINK_URL,
         headers=get_auth_headers(),
-        params={'path': disk_path}
+        params={'path': location if location else disk_path}
     ) as response:
         data = await response.json()
         download_url = data['href']

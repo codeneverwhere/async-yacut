@@ -22,8 +22,21 @@
 
         <form method="POST" novalidate>
           {{ form.csrf_token }}
+
           {{ form.original_link(class="form-control form-control-lg py-3 mb-3", placeholder="Длинная ссылка") }}
+          {% if form.original_link.errors %}
+            {% for error in form.original_link.errors %}
+              <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+
           {{ form.custom_id(class="form-control form-control-lg py-3 mb-3", placeholder="Ваш вариант короткой ссылки") }}
+          {% if form.custom_id.errors %}
+            {% for error in form.custom_id.errors %}
+              <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+
           {{ form.submit(class="btn btn-primary px-5 py-3") }}
         </form>
 
