@@ -10,9 +10,10 @@ class URLMap(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def to_dict(self):
+        from flask import request
         return dict(
             url=self.original,
-            short_link=f'http://localhost/{self.short}'
+            short_link=f'{request.host_url}{self.short}'
         )
 
     def from_dict(self, data):
