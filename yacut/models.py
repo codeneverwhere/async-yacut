@@ -19,3 +19,7 @@ class URLMap(db.Model):
     def from_dict(self, data):
         self.original = data.get('url')
         self.short = data.get('custom_id')
+
+    def get_short_link(self):
+        from flask import request
+        return f'{request.host_url}{self.short}'

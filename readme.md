@@ -55,11 +55,14 @@ flask run
 ```
 
 ## Заполнение .env
+
+```
 FLASK_APP=yacut
 FLASK_DEBUG=1
 DATABASE_URI=sqlite:///db.sqlite3
 SECRET_KEY=ваш-секретный-ключ
 DISK_TOKEN=ваш-токен-яндекс-диска
+```
 
 Токен Яндекс Диска получается через [OAuth Яндекс](https://oauth.yandex.ru/).
 

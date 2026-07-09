@@ -3,7 +3,6 @@
 {% block title %}YaCut — укоротитель ссылок{% endblock %}
 
 {% block content %}
-<main>
   <section class="container my-5">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-7 text-center">
@@ -11,35 +10,23 @@
           <span style="color: red;">Ya</span>Cut
         </h1>
         <p class="mb-4">Создайте короткую ссылку автоматически или предложите свой вариант</p>
-
         {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-warning">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
+          {% for message in messages %}
+            <div class="alert alert-warning">{{ message }}</div>
+          {% endfor %}
         {% endwith %}
-
         <form method="POST" novalidate>
           {{ form.csrf_token }}
-
           {{ form.original_link(class="form-control form-control-lg py-3 mb-3", placeholder="Длинная ссылка") }}
-          {% if form.original_link.errors %}
-            {% for error in form.original_link.errors %}
-              <div class="alert alert-danger">{{ error }}</div>
-            {% endfor %}
-          {% endif %}
-
+          {% for error in form.original_link.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endfor %}
           {{ form.custom_id(class="form-control form-control-lg py-3 mb-3", placeholder="Ваш вариант короткой ссылки") }}
-          {% if form.custom_id.errors %}
-            {% for error in form.custom_id.errors %}
-              <div class="alert alert-danger">{{ error }}</div>
-            {% endfor %}
-          {% endif %}
-
+          {% for error in form.custom_id.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endfor %}
           {{ form.submit(class="btn btn-primary px-5 py-3") }}
         </form>
-
         {% if short_link %}
           <div class="mt-4">
             <p><strong>Ваша новая ссылка готова:</strong></p>
@@ -49,5 +36,4 @@
       </div>
     </div>
   </section>
-</main>
 {% endblock %}
