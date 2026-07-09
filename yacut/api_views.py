@@ -4,6 +4,11 @@ from flask import jsonify, request
 
 from . import app
 from .error_handlers import InvalidAPIUsage
+from .exceptions import (
+    InvalidShortIDError,
+    ShortIDAlreadyExistsError,
+    ShortIDGenerationError,
+)
 from .models import URLMap
 
 
@@ -19,8 +24,10 @@ def create_short_link():
             original=data['url'],
             custom_id=data.get('custom_id')
         )
-    except InvalidAPIUsage:
-        raise
+    except (InvalidShortIDError, ShortIDAlreadyExistsError) as e:
+        raise InvalidAPIUsage(str(e))
+    except ShortIDGenerationError as e:
+        raise InvalidAPIUsage(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
     return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 

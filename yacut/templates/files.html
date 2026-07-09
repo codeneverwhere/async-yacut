@@ -21,13 +21,11 @@
         {% if results %}
           <table class="table mt-4">
             <tbody>
-              {% for filename, url_map in results %}
+              {% for filename, short_link in results %}
                 <tr>
                   <td>{{ filename }}</td>
                   <td>
-                    <a href="{{ url_map.get_short_link() }}">
-                      {{ url_map.get_short_link() }}
-                    </a>
+                    <a href="{{ short_link }}">{{ short_link }}</a>
                   </td>
                 </tr>
               {% endfor %}

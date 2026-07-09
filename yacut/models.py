@@ -14,6 +14,11 @@ from .constants import (
     SHORT_ID_MAX_LENGTH,
     SHORT_ID_PATTERN,
 )
+from .exceptions import (
+    InvalidShortIDError,
+    ShortIDAlreadyExistsError,
+    ShortIDGenerationError,
+)
 
 
 class URLMap(db.Model):
@@ -57,26 +62,25 @@ class URLMap(db.Model):
             )
             if not URLMap.get_by_short(short_id):
                 return short_id
-        raise ValueError(
+        raise ShortIDGenerationError(
             'Не удалось сгенерировать уникальный идентификатор'
         )
 
     @staticmethod
     def create(original, custom_id=None):
-        from yacut.error_handlers import InvalidAPIUsage
         if custom_id:
             if (
                 len(custom_id) > SHORT_ID_MAX_LENGTH
                 or not re.match(SHORT_ID_PATTERN, custom_id)
             ):
-                raise InvalidAPIUsage(
+                raise InvalidShortIDError(
                     'Указано недопустимое имя для короткой ссылки'
                 )
             if (
                 custom_id in FORBIDDEN_SHORT_IDS
                 or URLMap.get_by_short(custom_id)
             ):
-                raise InvalidAPIUsage(
+                raise ShortIDAlreadyExistsError(
                     'Предложенный вариант короткой ссылки уже существует.'
                 )
         else:

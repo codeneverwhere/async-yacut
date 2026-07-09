@@ -69,6 +69,6 @@ async def async_upload_files(files):
         )
         db.session.add(url_map)
         db.session.commit()
-        results.append((filename, url_map))
+        results.append((filename, url_map.get_short_link()))
 
     return results

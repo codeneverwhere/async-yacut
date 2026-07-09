@@ -70,3 +70,7 @@ DISK_TOKEN=ваш-токен-яндекс-диска
 
 - `POST /api/id/` — создание короткой ссылки
 - `GET /api/id/<short_id>/` — получение оригинальной ссылки
+
+## Автор
+
+Ekaterina Demidenko — [GitHub](https://github.com/codeneverwhere)

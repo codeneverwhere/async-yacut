@@ -1,10 +1,14 @@
 from flask import flash, redirect, render_template
 
 from . import app
+from .exceptions import (
+    InvalidShortIDError,
+    ShortIDAlreadyExistsError,
+    ShortIDGenerationError,
+)
 from .forms import URLMapForm, FileUploadForm
 from .models import URLMap
 from .yandex_disk import async_upload_files
-from .error_handlers import InvalidAPIUsage
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -18,8 +22,12 @@ def index_view():
                 custom_id=form.custom_id.data
             )
             short_link = url_map.get_short_link()
-        except InvalidAPIUsage as e:
-            flash(e.message)
+        except (
+            InvalidShortIDError,
+            ShortIDAlreadyExistsError,
+            ShortIDGenerationError,
+        ) as e:
+            flash(str(e))
             return render_template('index.html', form=form)
     return render_template('index.html', form=form, short_link=short_link)
 
