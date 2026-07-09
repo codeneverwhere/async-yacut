@@ -1,21 +1,10 @@
-import random
-import string
+from flask import flash, redirect, render_template
 
-from flask import flash, redirect, render_template, url_for
-
-from . import app, db
+from . import app
 from .forms import URLMapForm, FileUploadForm
 from .models import URLMap
-
-
-ALLOWED_CHARS = string.ascii_letters + string.digits
-
-
-def get_unique_short_id(length=6):
-    while True:
-        short_id = ''.join(random.choices(ALLOWED_CHARS, k=length))
-        if not URLMap.query.filter_by(short=short_id).first():
-            return short_id
+from .yandex_disk import async_upload_files
+from .error_handlers import InvalidAPIUsage
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -23,26 +12,15 @@ def index_view():
     form = URLMapForm()
     short_link = None
     if form.validate_on_submit():
-        custom_id = form.custom_id.data
-        if custom_id:
-            if custom_id == 'files' or URLMap.query.filter_by(
-                short=custom_id
-            ).first():
-                flash('Предложенный вариант короткой ссылки уже существует.')
-                return render_template('index.html', form=form)
-        else:
-            custom_id = get_unique_short_id()
-        url_map = URLMap(
-            original=form.original_link.data,
-            short=custom_id
-        )
-        db.session.add(url_map)
-        db.session.commit()
-        short_link = url_for(
-            'redirect_view',
-            short_id=custom_id,
-            _external=True
-        )
+        try:
+            url_map = URLMap.create(
+                original=form.original_link.data,
+                custom_id=form.custom_id.data
+            )
+            short_link = url_map.get_short_link()
+        except InvalidAPIUsage as e:
+            flash(e.message)
+            return render_template('index.html', form=form)
     return render_template('index.html', form=form, short_link=short_link)
 
 
@@ -51,7 +29,6 @@ async def files_view():
     form = FileUploadForm()
     results = []
     if form.validate_on_submit():
-        from .yandex_disk import async_upload_files
         files = form.files.data
         results = await async_upload_files(files)
     return render_template('files.html', form=form, results=results)
